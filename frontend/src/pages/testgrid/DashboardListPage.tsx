@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -17,6 +18,7 @@ import { useTestGridStore } from '../../stores/testgridStore';
 export default function DashboardListPage() {
   const { data, isLoading, error, refetch } = useTestGridDashboards();
   const { searchTerm, setSearchTerm } = useTestGridStore();
+  const history = useHistory();
 
   const filtered = useMemo(() => {
     const dashboards = data?.dashboards ?? [];
@@ -67,7 +69,10 @@ export default function DashboardListPage() {
             ))}
           {!isLoading &&
             filtered.slice(0, 200).map((d) => (
-              <ListItemButton key={d.name}>
+              <ListItemButton
+                key={d.name}
+                onClick={() => history.push(`/testgrid/dashboards/${encodeURIComponent(d.name)}`)}
+              >
                 <ListItemText
                   primary={d.name}
                   secondary={d.dashboard_tab ? `${d.dashboard_tab.length} tabs` : undefined}

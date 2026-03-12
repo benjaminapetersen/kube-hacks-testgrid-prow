@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -49,6 +50,7 @@ function formatTime(iso?: string): string {
 export default function ProwJobsPage() {
   const { data, isLoading, error, refetch } = useProwJobs();
   const { searchTerm, stateFilter, typeFilter, setSearchTerm, setStateFilter, setTypeFilter, clearFilters } = useProwStore();
+  const history = useHistory();
 
   const filtered = useMemo(() => {
     if (!data?.items) return [];
@@ -156,7 +158,10 @@ export default function ProwJobsPage() {
               ))}
             {!isLoading &&
               filtered.slice(0, 200).map((job, i) => (
-                <TableRow key={`${job.job}-${job.build_id ?? i}`} hover>
+                <TableRow key={`${job.job}-${job.build_id ?? i}`} hover
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => history.push(`/prow/job/${encodeURIComponent(job.job)}`)}
+                >
                   <TableCell sx={{ maxWidth: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {job.url ? (
                       <a href={job.url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>

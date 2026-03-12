@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -8,6 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import ButtonBase from '@mui/material/ButtonBase';
 import MenuIcon from '@mui/icons-material/Menu';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -19,12 +21,25 @@ import { palettes } from '../../theme/theme';
 
 const paletteNames = Object.keys(palettes) as PaletteName[];
 
+function useContextBranding() {
+  const { pathname } = useLocation();
+  if (pathname.startsWith('/prow')) {
+    return { logo: '/prow-icon.png', alt: 'Prow', title: 'Prow' };
+  }
+  if (pathname.startsWith('/testgrid')) {
+    return { logo: '/testgrid-icon.png', alt: 'TestGrid', title: 'TestGrid' };
+  }
+  return { logo: '/prow-icon.png', alt: 'Kube Test Viewer', title: 'Kube Test Viewer' };
+}
+
 export default function TopBar() {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
   const themeMode = useAppStore((s) => s.themeMode);
   const toggleThemeMode = useAppStore((s) => s.toggleThemeMode);
   const currentPalette = useAppStore((s) => s.palette);
   const setPalette = useAppStore((s) => s.setPalette);
+  const history = useHistory();
+  const branding = useContextBranding();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -44,12 +59,24 @@ export default function TopBar() {
           <MenuIcon />
         </IconButton>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}>
-          <img src="/favicon.png" alt="Prow" height={28} />
-          <Typography variant="h6" noWrap component="div">
-            Kube Test Viewer
+        <ButtonBase
+          onClick={() => history.push('/')}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            flexGrow: 1,
+            justifyContent: 'flex-start',
+            borderRadius: 1,
+            px: 1,
+            py: 0.5,
+          }}
+        >
+          <img src={branding.logo} alt={branding.alt} height={28} />
+          <Typography variant="h6" noWrap component="div" color="inherit">
+            {branding.title}
           </Typography>
-        </Box>
+        </ButtonBase>
 
         {/* Theme controls */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

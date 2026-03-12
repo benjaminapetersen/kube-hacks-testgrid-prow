@@ -10,7 +10,11 @@ import { useAppStore } from './stores/appStore';
 import AppShell from './components/layout/AppShell';
 import Home from './pages/Home';
 import ProwJobsPage from './pages/prow/ProwJobsPage';
+import ProwJobDetailPage from './pages/prow/ProwJobDetailPage';
+import SpyglassPage from './pages/prow/SpyglassPage';
 import DashboardListPage from './pages/testgrid/DashboardListPage';
+import DashboardPage from './pages/testgrid/DashboardPage';
+import TestDetailPage from './pages/testgrid/TestDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,8 +38,12 @@ export default function App() {
           <AppShell>
             <Switch>
               <Route exact path="/" component={Home} />
-              <Route path="/prow/jobs" component={ProwJobsPage} />
-              <Route path="/testgrid/dashboards" component={DashboardListPage} />
+              <Route exact path="/prow/jobs" component={ProwJobsPage} />
+              <Route exact path="/prow/job/:jobName" component={ProwJobDetailPage} />
+              <Route exact path="/prow/spyglass" component={SpyglassPage} />
+              <Route exact path="/testgrid/dashboards" component={DashboardListPage} />
+              <Route exact path="/testgrid/dashboards/:dashboard" component={DashboardPage} />
+              <Route exact path="/testgrid/dashboards/:dashboard/:tab" component={TestDetailPage} />
             </Switch>
           </AppShell>
         </Router>

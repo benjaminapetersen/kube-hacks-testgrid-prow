@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import TopBar from './TopBar';
 import Sidebar, { DRAWER_WIDTH } from './Sidebar';
+import Breadcrumbs from '../common/Breadcrumbs';
 import { useAppStore } from '../../stores/appStore';
 
 interface AppShellProps {
@@ -26,6 +27,7 @@ export default function AppShell({ children }: AppShellProps) {
       >
         {/* Spacer for the AppBar height */}
         <Toolbar />
+        <Breadcrumbs />
         {children}
       </Box>
     </Box>
