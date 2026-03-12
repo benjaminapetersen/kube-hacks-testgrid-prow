@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-import theme from './theme/theme';
+import { buildTheme } from './theme/theme';
+import { useAppStore } from './stores/appStore';
 import AppShell from './components/layout/AppShell';
 import Home from './pages/Home';
 import ProwJobsPage from './pages/prow/ProwJobsPage';
@@ -20,6 +22,10 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const themeMode = useAppStore((s) => s.themeMode);
+  const palette = useAppStore((s) => s.palette);
+  const theme = useMemo(() => buildTheme(themeMode, palette), [themeMode, palette]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>

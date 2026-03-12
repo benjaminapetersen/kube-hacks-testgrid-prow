@@ -1,13 +1,32 @@
+import { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useAppStore } from '../../stores/appStore';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import PaletteIcon from '@mui/icons-material/Palette';
+import CheckIcon from '@mui/icons-material/Check';
+import CircleIcon from '@mui/icons-material/Circle';
+import { useAppStore, type PaletteName } from '../../stores/appStore';
+import { palettes } from '../../theme/theme';
+
+const paletteNames = Object.keys(palettes) as PaletteName[];
 
 export default function TopBar() {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
+  const themeMode = useAppStore((s) => s.themeMode);
+  const toggleThemeMode = useAppStore((s) => s.toggleThemeMode);
+  const currentPalette = useAppStore((s) => s.palette);
+  const setPalette = useAppStore((s) => s.setPalette);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <AppBar
@@ -25,11 +44,53 @@ export default function TopBar() {
           <MenuIcon />
         </IconButton>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}>
           <img src="/favicon.png" alt="Prow" height={28} />
           <Typography variant="h6" noWrap component="div">
             Kube Test Viewer
           </Typography>
+        </Box>
+
+        {/* Theme controls */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <IconButton
+            color="inherit"
+            onClick={toggleThemeMode}
+            aria-label="toggle light/dark mode"
+            title={themeMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+          </IconButton>
+
+          <IconButton
+            color="inherit"
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+            aria-label="change color palette"
+            title="Color palette"
+          >
+            <PaletteIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            {paletteNames.map((name) => (
+              <MenuItem
+                key={name}
+                selected={name === currentPalette}
+                onClick={() => { setPalette(name); setAnchorEl(null); }}
+              >
+                <ListItemIcon>
+                  <CircleIcon sx={{ color: palettes[name].primary, fontSize: 16 }} />
+                </ListItemIcon>
+                <ListItemText>{palettes[name].label}</ListItemText>
+                {name === currentPalette && (
+                  <CheckIcon fontSize="small" sx={{ ml: 1 }} />
+                )}
+              </MenuItem>
+            ))}
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>
