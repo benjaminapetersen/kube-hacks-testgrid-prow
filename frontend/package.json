@@ -1,0 +1,12 @@
+{
+  "name": "kube-hacks-testgrid-prow",
+  "version": "0.0.1",
+  "description": "A hack project for a unified UI for both Test Grid and Prow",
+  "license": "Apache License 2.0",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
