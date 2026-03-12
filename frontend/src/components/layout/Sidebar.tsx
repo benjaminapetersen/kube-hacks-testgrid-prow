@@ -8,6 +8,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Divider from '@mui/material/Divider';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import WorkIcon from '@mui/icons-material/Work';
 import GridViewIcon from '@mui/icons-material/GridView';
@@ -31,8 +33,92 @@ const testgridItems: NavItem[] = [
 
 export default function Sidebar() {
   const sidebarOpen = useAppStore((s) => s.sidebarOpen);
+  const setSidebarOpen = useAppStore((s) => s.setSidebarOpen);
   const location = useLocation();
   const history = useHistory();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleNav = (path: string) => {
+    history.push(path);
+    if (isMobile) setSidebarOpen(false);
+  };
+
+  const drawerContent = (
+    <Box sx={{ overflow: 'auto', pt: 1 }}>
+      <List>
+        <ListItemButton
+          selected={location.pathname === '/'}
+          onClick={() => handleNav('/')}
+        >
+          <ListItemIcon><DashboardIcon /></ListItemIcon>
+          <ListItemText primary="Overview" />
+        </ListItemButton>
+      </List>
+
+      <Divider sx={{ my: 1 }} />
+
+      <List
+        subheader={
+          <ListSubheader sx={{ bgcolor: 'transparent', color: 'text.secondary' }}>
+            Prow
+          </ListSubheader>
+        }
+      >
+        {prowItems.map((item) => (
+          <ListItemButton
+            key={item.path}
+            selected={location.pathname.startsWith(item.path)}
+            onClick={() => handleNav(item.path)}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItemButton>
+        ))}
+      </List>
+
+      <Divider sx={{ my: 1 }} />
+
+      <List
+        subheader={
+          <ListSubheader sx={{ bgcolor: 'transparent', color: 'text.secondary' }}>
+            TestGrid
+          </ListSubheader>
+        }
+      >
+        {testgridItems.map((item) => (
+          <ListItemButton
+            key={item.path}
+            selected={location.pathname.startsWith(item.path)}
+            onClick={() => handleNav(item.path)}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItemButton>
+        ))}
+      </List>
+    </Box>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer
+        variant="temporary"
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: DRAWER_WIDTH,
+            boxSizing: 'border-box',
+            top: 64,
+          },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+    );
+  }
 
   return (
     <Drawer
@@ -44,63 +130,11 @@ export default function Sidebar() {
         '& .MuiDrawer-paper': {
           width: DRAWER_WIDTH,
           boxSizing: 'border-box',
-          top: 64, // below AppBar
+          top: 64,
         },
       }}
     >
-      <Box sx={{ overflow: 'auto', pt: 1 }}>
-        <List>
-          <ListItemButton
-            selected={location.pathname === '/'}
-            onClick={() => history.push('/')}
-          >
-            <ListItemIcon><DashboardIcon /></ListItemIcon>
-            <ListItemText primary="Overview" />
-          </ListItemButton>
-        </List>
-
-        <Divider sx={{ my: 1 }} />
-
-        <List
-          subheader={
-            <ListSubheader sx={{ bgcolor: 'transparent', color: 'text.secondary' }}>
-              Prow
-            </ListSubheader>
-          }
-        >
-          {prowItems.map((item) => (
-            <ListItemButton
-              key={item.path}
-              selected={location.pathname.startsWith(item.path)}
-              onClick={() => history.push(item.path)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          ))}
-        </List>
-
-        <Divider sx={{ my: 1 }} />
-
-        <List
-          subheader={
-            <ListSubheader sx={{ bgcolor: 'transparent', color: 'text.secondary' }}>
-              TestGrid
-            </ListSubheader>
-          }
-        >
-          {testgridItems.map((item) => (
-            <ListItemButton
-              key={item.path}
-              selected={location.pathname.startsWith(item.path)}
-              onClick={() => history.push(item.path)}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          ))}
-        </List>
-      </Box>
+      {drawerContent}
     </Drawer>
   );
 }

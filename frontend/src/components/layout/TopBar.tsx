@@ -18,6 +18,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useAppStore, type PaletteName } from '../../stores/appStore';
 import { palettes } from '../../theme/theme';
+import GlobalSearch from '../common/GlobalSearch';
 
 const paletteNames = Object.keys(palettes) as PaletteName[];
 
@@ -73,10 +74,17 @@ export default function TopBar() {
           }}
         >
           <img src={branding.logo} alt={branding.alt} height={28} />
-          <Typography variant="h6" noWrap component="div" color="inherit">
+          <Typography variant="h6" noWrap component="div" color="inherit"
+            sx={{ display: { xs: 'none', sm: 'block' } }}
+          >
             {branding.title}
           </Typography>
         </ButtonBase>
+
+        {/* Global search */}
+        <Box sx={{ mr: 1, display: { xs: 'none', md: 'block' } }}>
+          <GlobalSearch />
+        </Box>
 
         {/* Theme controls */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

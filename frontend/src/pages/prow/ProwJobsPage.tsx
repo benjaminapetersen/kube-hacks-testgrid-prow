@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useMemo, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -51,6 +51,32 @@ export default function ProwJobsPage() {
   const { data, isLoading, error, refetch } = useProwJobs();
   const { searchTerm, stateFilter, typeFilter, setSearchTerm, setStateFilter, setTypeFilter, clearFilters } = useProwStore();
   const history = useHistory();
+  const location = useLocation();
+
+  // Initialize filters from URL query params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    const state = params.get('state');
+    const type = params.get('type');
+    if (q) setSearchTerm(q);
+    if (state) setStateFilter(state as ProwJobState);
+    if (type) setTypeFilter(type as typeof jobTypes[number]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync filters back to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('q', searchTerm);
+    if (stateFilter) params.set('state', stateFilter);
+    if (typeFilter) params.set('type', typeFilter);
+    const search = params.toString();
+    const newSearch = search ? `?${search}` : '';
+    if (location.search !== newSearch) {
+      history.replace({ pathname: location.pathname, search: newSearch });
+    }
+  }, [searchTerm, stateFilter, typeFilter, history, location.pathname, location.search]);
 
   const filtered = useMemo(() => {
     if (!data?.items) return [];
